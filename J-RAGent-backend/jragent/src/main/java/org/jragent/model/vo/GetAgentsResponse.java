@@ -10,6 +10,6 @@ import java.util.List;
 @Builder
 @Schema(name = "GetAgentsResponse", description = "获取智能体响应")
 public class GetAgentsResponse {
-    // 不能只获取单个agent，所以要多一层封装
+    @Schema(description = "智能体列表")
     private List<AgentVO> agents;
 }

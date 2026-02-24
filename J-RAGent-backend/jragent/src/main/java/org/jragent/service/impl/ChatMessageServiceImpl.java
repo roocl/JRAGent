@@ -16,6 +16,7 @@ import org.jragent.model.vo.GetChatMessagesResponse;
 import org.jragent.service.ChatMessageService;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -40,7 +41,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                 chatMessageVO = chatMessageConverter.toVO(chatMessage);
                 return chatMessageVO;
             } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
+                throw new BaseException();
             }
         }).toList();
 
@@ -59,7 +60,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
                 chatMessageDTO = chatMessageConverter.toDTO(chatMessage);
                 return chatMessageDTO;
             } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
+                throw new BaseException();
             }
         }).toList();
     }
@@ -69,10 +70,13 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         ChatMessage chatMessage = doCreateChatMessage(request);
 
         // 发布聊天通知事件
-        publisher.publishEvent(new ChatEvent(request.getAgentId(),
-                chatMessage.getSessionId(),
-                chatMessage.getContent())
-        );
+        if (request.getRole() == ChatMessageDTO.RoleType.USER) {
+            Assert.notNull(request.getAgentId(), "agentId不能为空");
+            publisher.publishEvent(new ChatEvent(request.getAgentId(),
+                    chatMessage.getSessionId(),
+                    chatMessage.getContent())
+            );
+        }
 
         // 返回生成的chatMessageId
         return CreateChatMessageResponse.builder()

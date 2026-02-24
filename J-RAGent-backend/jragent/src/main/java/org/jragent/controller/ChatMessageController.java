@@ -3,6 +3,7 @@ package org.jragent.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.jragent.model.common.ApiResponse;
 import org.jragent.model.dto.CreateChatMessageRequest;
@@ -27,7 +28,7 @@ public class ChatMessageController {
 
     @PostMapping("/chat-messages")
     @Operation(summary = "创建聊天消息")
-    public ApiResponse<CreateChatMessageResponse> createChatMessage(@RequestBody CreateChatMessageRequest request) {
+    public ApiResponse<CreateChatMessageResponse> createChatMessage(@Valid @RequestBody CreateChatMessageRequest request) {
         return ApiResponse.success(chatMessageService.createChatMessage(request));
     }
 
@@ -35,7 +36,7 @@ public class ChatMessageController {
     @Operation(summary = "更新聊天消息")
     public ApiResponse<Void> updateChatMessage(
             @Parameter(description = "聊天消息ID", required = true) @PathVariable String chatMessageId,
-            @RequestBody UpdateChatMessageRequest request
+            @Valid @RequestBody UpdateChatMessageRequest request
     ) {
         chatMessageService.updateChatMessage(chatMessageId, request);
         return ApiResponse.success();

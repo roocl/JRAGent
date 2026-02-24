@@ -3,6 +3,7 @@ package org.jragent.controller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.jragent.model.common.ApiResponse;
 import org.jragent.model.dto.CreateChatSessionRequest;
@@ -40,7 +41,7 @@ public class ChatSessionController {
 
     @PostMapping("/chat-sessions")
     @Operation(summary = "创建聊天会话")
-    public ApiResponse<CreateChatSessionResponse> createChatSession(@RequestBody CreateChatSessionRequest request) {
+    public ApiResponse<CreateChatSessionResponse> createChatSession(@Valid @RequestBody CreateChatSessionRequest request) {
         return ApiResponse.success(chatSessionService.createChatSession(request));
     }
 
@@ -48,7 +49,7 @@ public class ChatSessionController {
     @Operation(summary = "更新聊天会话")
     public ApiResponse<Void> updateChatSession(
             @Parameter(description = "聊天会话ID", required = true) @PathVariable String chatSessionId,
-            @RequestBody UpdateChatSessionRequest request
+            @Valid @RequestBody UpdateChatSessionRequest request
     ) {
         chatSessionService.updateChatSession(chatSessionId, request);
         return ApiResponse.success();

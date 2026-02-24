@@ -11,6 +11,7 @@ import org.jragent.model.entity.Agent;
 import org.jragent.model.dto.AgentDTO;
 import org.jragent.model.vo.AgentVO;
 import org.jragent.model.vo.CreateAgentResponse;
+import org.jragent.model.vo.GetAgentResponse;
 import org.jragent.model.vo.GetAgentsResponse;
 import org.jragent.service.AgentService;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,23 @@ public class AgentServiceImpl implements AgentService {
     private final AgentConverter agentConverter;
 
     @Override
+    public GetAgentResponse getAgent(String agentId) {
+        Agent agent = agentMapper.selectById(agentId);
+        if (agent == null) {
+            throw new BaseException("Agent不存在: " + agentId);
+        }
+
+        try {
+            AgentVO agentVO = agentConverter.toVO(agent);
+            return GetAgentResponse.builder()
+                    .agent(agentVO)
+                    .build();
+        } catch (JsonProcessingException e) {
+            throw new BaseException("查询agent时发生序列化错误: " + e.getMessage());
+        }
+    }
+
+    @Override
     public GetAgentsResponse getAgents() {
         List<Agent> agents = agentMapper.selectAll();
 
@@ -35,7 +53,7 @@ public class AgentServiceImpl implements AgentService {
             try {
                 agentVO = agentConverter.toVO(agent);
             } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
+                throw new BaseException();
             }
             return agentVO;
         }).toList();

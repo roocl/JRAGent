@@ -4,10 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import org.jragent.converter.ChatSessionConverter;
 import org.jragent.exception.BaseException;
+import org.jragent.mapper.AgentMapper;
 import org.jragent.mapper.ChatSessionMapper;
 import org.jragent.model.dto.ChatSessionDTO;
 import org.jragent.model.dto.CreateChatSessionRequest;
 import org.jragent.model.dto.UpdateChatSessionRequest;
+import org.jragent.model.entity.Agent;
 import org.jragent.model.entity.ChatSession;
 import org.jragent.model.vo.ChatSessionVO;
 import org.jragent.model.vo.CreateChatSessionResponse;
@@ -25,6 +27,8 @@ public class ChatSessionServiceImpl implements ChatSessionService {
 
     private final ChatSessionMapper chatSessionMapper;
 
+    private final AgentMapper agentMapper;
+
     private final ChatSessionConverter chatSessionConverter;
 
     @Override
@@ -40,7 +44,7 @@ public class ChatSessionServiceImpl implements ChatSessionService {
                     .chatSession(chatSessionVO)
                     .build();
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new BaseException();
         }
     }
 
@@ -64,7 +68,7 @@ public class ChatSessionServiceImpl implements ChatSessionService {
                 chatSessionVO = chatSessionConverter.toVO(chatSession);
                 return chatSessionVO;
             } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
+                throw new BaseException();
             }
         }).toList();
 
@@ -76,6 +80,11 @@ public class ChatSessionServiceImpl implements ChatSessionService {
     @Override
     public CreateChatSessionResponse createChatSession(CreateChatSessionRequest request) {
         try {
+            Agent agent = agentMapper.selectById(request.getAgentId());
+            if (agent == null) {
+                throw new BaseException("agent不存在: " + request.getAgentId());
+            }
+
             // req转dto
             ChatSessionDTO chatSessionDTO = chatSessionConverter.toDTO(request);
 
