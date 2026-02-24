@@ -8,6 +8,7 @@ import org.jragent.model.dto.ChatSessionDTO;
 import org.jragent.model.dto.CreateChatSessionRequest;
 import org.jragent.model.dto.UpdateChatSessionRequest;
 import org.jragent.model.entity.ChatSession;
+import org.jragent.model.vo.ChatSessionVO;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
@@ -64,5 +65,17 @@ public class ChatSessionConverter {
         if (request.getTitle() != null) {
             dto.setTitle(request.getTitle());
         }
+    }
+
+    public ChatSessionVO toVO(ChatSessionDTO dto) {
+        return ChatSessionVO.builder()
+                .id(dto.getId())
+                .agentId(dto.getAgentId())
+                .title(dto.getTitle())
+                .build();
+    }
+
+    public ChatSessionVO toVO(ChatSession chatSession) throws JsonProcessingException {
+        return toVO(toDTO(chatSession));
     }
 }

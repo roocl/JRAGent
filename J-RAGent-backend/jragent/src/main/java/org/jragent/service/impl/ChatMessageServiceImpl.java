@@ -10,7 +10,9 @@ import org.jragent.model.dto.ChatMessageDTO;
 import org.jragent.model.dto.CreateChatMessageRequest;
 import org.jragent.model.dto.UpdateChatMessageRequest;
 import org.jragent.model.entity.ChatMessage;
+import org.jragent.model.vo.ChatMessageVO;
 import org.jragent.model.vo.CreateChatMessageResponse;
+import org.jragent.model.vo.GetChatMessagesResponse;
 import org.jragent.service.ChatMessageService;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -29,13 +31,47 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     private final ApplicationEventPublisher publisher;
 
     @Override
+    public GetChatMessagesResponse getChatMessagesBySessionId(String sessionId) {
+        List<ChatMessage> chatMessages = chatMessageMapper.selectBySessionId(sessionId);
+
+        List<ChatMessageVO> chatMessageVOS = chatMessages.stream().map(chatMessage -> {
+            ChatMessageVO chatMessageVO;
+            try {
+                chatMessageVO = chatMessageConverter.toVO(chatMessage);
+                return chatMessageVO;
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }).toList();
+
+        return GetChatMessagesResponse.builder()
+                .chatMessages(chatMessageVOS)
+                .build();
+    }
+
+    @Override
+    public List<ChatMessageDTO> getChatMessagesBySessionIdRecently(String sessionId, int limit) {
+        List<ChatMessage> chatMessages = chatMessageMapper.selectBySessionIdRecently(sessionId, limit);
+
+        return chatMessages.stream().map(chatMessage -> {
+            ChatMessageDTO chatMessageDTO;
+            try {
+                chatMessageDTO = chatMessageConverter.toDTO(chatMessage);
+                return chatMessageDTO;
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }).toList();
+    }
+
+    @Override
     public CreateChatMessageResponse createChatMessage(CreateChatMessageRequest request) {
         ChatMessage chatMessage = doCreateChatMessage(request);
 
         // 发布聊天通知事件
         publisher.publishEvent(new ChatEvent(request.getAgentId(),
-                        chatMessage.getSessionId(),
-                        chatMessage.getContent())
+                chatMessage.getSessionId(),
+                chatMessage.getContent())
         );
 
         // 返回生成的chatMessageId
@@ -91,7 +127,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
 
             ChatMessage updatedChatMessage = chatMessageConverter.toEntity(chatMessageDTO);
 
-            // 保留原有的ID、sessionId、role 和创建时间
+            // 保留原有的ID、sessionId、role和创建时间
             updatedChatMessage.setId(existingChatMessage.getId());
             updatedChatMessage.setSessionId(existingChatMessage.getSessionId());
             updatedChatMessage.setRole(existingChatMessage.getRole());
@@ -109,19 +145,15 @@ public class ChatMessageServiceImpl implements ChatMessageService {
     }
 
     @Override
-    public List<ChatMessageDTO> getChatMessagesBySessionIdRecently(String sessionId, int limit) {
-        List<ChatMessage> chatMessages = chatMessageMapper.selectBySessionIdRecently(sessionId, limit);
-        List<ChatMessageDTO> result = new ArrayList<>();
-        for (ChatMessage chatMessage : chatMessages) {
-            try {
-                ChatMessageDTO chatMessageDTO = chatMessageConverter.toDTO(chatMessage);
-                result.add(chatMessageDTO);
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
+    public void deleteChatMessage(String chatMessageId) {
+        ChatMessage chatMessage = chatMessageMapper.selectById(chatMessageId);
+        if (chatMessage == null) {
+            throw new BaseException("聊天消息不存在: " + chatMessageId);
         }
-        return result;
+
+        int result = chatMessageMapper.deleteById(chatMessageId);
+        if (result <= 0) {
+            throw new BaseException("删除聊天消息失败");
+        }
     }
-
-
 }

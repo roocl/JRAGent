@@ -4,10 +4,15 @@ import org.jragent.model.dto.ChatMessageDTO;
 import org.jragent.model.dto.CreateChatMessageRequest;
 import org.jragent.model.dto.UpdateChatMessageRequest;
 import org.jragent.model.vo.CreateChatMessageResponse;
+import org.jragent.model.vo.GetChatMessagesResponse;
 
 import java.util.List;
 
 public interface ChatMessageService {
+
+    GetChatMessagesResponse getChatMessagesBySessionId(String sessionId);
+
+    List<ChatMessageDTO> getChatMessagesBySessionIdRecently(String sessionId, int limit);
 
     CreateChatMessageResponse createChatMessage(CreateChatMessageRequest request);
 
@@ -15,6 +20,5 @@ public interface ChatMessageService {
 
     void updateChatMessage(String chatMessageId, UpdateChatMessageRequest request);
 
-    List<ChatMessageDTO> getChatMessagesBySessionIdRecently(String sessionId, int limit);
-
+    void deleteChatMessage(String chatMessageId);
 }

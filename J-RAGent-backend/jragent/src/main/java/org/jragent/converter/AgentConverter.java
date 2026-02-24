@@ -6,7 +6,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.jragent.model.dto.AgentDTO;
 import org.jragent.model.dto.CreateAgentRequest;
+import org.jragent.model.dto.UpdateAgentRequest;
 import org.jragent.model.entity.Agent;
+import org.jragent.model.vo.AgentVO;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 
@@ -16,24 +18,24 @@ public class AgentConverter {
 
     private final ObjectMapper objectMapper;
 
-    public Agent toEntity(AgentDTO agentDTO) throws JsonProcessingException {
-        Assert.notNull(agentDTO, "AgentDTO cannot be null");
-        Assert.notNull(agentDTO.getAllowedTools(), "Allowed tools cannot be null");
-//        Assert.notNull(agentDTO.getAllowedKbs(), "Allowed kbs cannot be null");
-        Assert.notNull(agentDTO.getChatOptions(), "Chat options cannot be null");
-        Assert.notNull(agentDTO.getModel(), "Model cannot be null");
+    public Agent toEntity(AgentDTO dto) throws JsonProcessingException {
+        Assert.notNull(dto, "AgentDTO cannot be null");
+        Assert.notNull(dto.getAllowedTools(), "Allowed tools cannot be null");
+//        Assert.notNull(dto.getAllowedKbs(), "Allowed kbs cannot be null");
+        Assert.notNull(dto.getChatOptions(), "Chat options cannot be null");
+        Assert.notNull(dto.getModel(), "Model cannot be null");
 
         return Agent.builder()
-                .id(agentDTO.getId())
-                .name(agentDTO.getName())
-                .description(agentDTO.getDescription())
-                .systemPrompt(agentDTO.getSystemPrompt())
-                .model(agentDTO.getModel().getModelName())
-                .allowedTools(objectMapper.writeValueAsString(agentDTO.getAllowedTools()))
-//                .allowedKbs(objectMapper.writeValueAsString(agentDTO.getAllowedKbs()))
-                .chatOptions(objectMapper.writeValueAsString(agentDTO.getChatOptions()))
-                .createdAt(agentDTO.getCreatedAt())
-                .updatedAt(agentDTO.getUpdatedAt())
+                .id(dto.getId())
+                .name(dto.getName())
+                .description(dto.getDescription())
+                .systemPrompt(dto.getSystemPrompt())
+                .model(dto.getModel().getModelName())
+                .allowedTools(objectMapper.writeValueAsString(dto.getAllowedTools()))
+//                .allowedKbs(objectMapper.writeValueAsString(dto.getAllowedKbs()))
+                .chatOptions(objectMapper.writeValueAsString(dto.getChatOptions()))
+                .createdAt(dto.getCreatedAt())
+                .updatedAt(dto.getUpdatedAt())
                 .build();
     }
 
@@ -76,4 +78,49 @@ public class AgentConverter {
                 .build();
     }
 
+    public AgentVO toVO(Agent agent) throws JsonProcessingException {
+        return toVO(toDTO(agent));
+    }
+
+    public AgentVO toVO(AgentDTO dto) throws JsonProcessingException {
+        // 不加assert，因为在toDTO时已经检验过了
+        return AgentVO.builder()
+                .id(dto.getId())
+                .name(dto.getName())
+                .description(dto.getDescription())
+                .systemPrompt(dto.getSystemPrompt())
+                .model(dto.getModel())
+                .allowedTools(dto.getAllowedTools())
+//                .allowedKbs(dto.getAllowedKbs())
+                .chatOptions(dto.getChatOptions())
+                .build();
+    }
+
+    public void updateDTOFromRequest(AgentDTO dto, UpdateAgentRequest request) {
+        Assert.notNull(dto, "AgentDTO cannot be null");
+        Assert.notNull(request, "UpdateAgentRequest cannot be null");
+
+        // 逐项更新
+        if (request.getName() != null) {
+            dto.setName(request.getName());
+        }
+        if (request.getDescription() != null) {
+            dto.setDescription(request.getDescription());
+        }
+        if (request.getSystemPrompt() != null) {
+            dto.setSystemPrompt(request.getSystemPrompt());
+        }
+        if (request.getModel() != null) {
+            dto.setModel(AgentDTO.ModelType.fromModelName(request.getModel()));
+        }
+        if (request.getAllowedTools() != null) {
+            dto.setAllowedTools(request.getAllowedTools());
+        }
+//        if (request.getAllowedKbs() != null) {
+//            dto.setAllowedKbs(request.getAllowedKbs());
+//        }
+        if (request.getChatOptions() != null) {
+            dto.setChatOptions(request.getChatOptions());
+        }
+    }
 }
