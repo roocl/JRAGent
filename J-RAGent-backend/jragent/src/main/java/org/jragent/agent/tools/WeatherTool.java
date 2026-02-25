@@ -1,19 +1,22 @@
 package org.jragent.agent.tools;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jragent.client.QWeatherClient;
+import org.jragent.client.WeatherClient;
+import org.jragent.model.vo.weather.WeatherDailyResponse;
+import org.jragent.model.vo.weather.WeatherNowResponse;
 import org.springframework.stereotype.Component;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class WeatherTool implements Tool {
 
-    private final QWeatherClient qWeatherClient;
+    private final WeatherClient weatherClient;
+
+    private final ObjectMapper objectMapper;
 
     @Override
     public String getName() {
@@ -27,26 +30,31 @@ public class WeatherTool implements Tool {
 
     @Override
     public ToolType getType() {
-        return ToolType.FIXED;
+        return ToolType.OPTIONAL;
     }
 
     @org.springframework.ai.tool.annotation.Tool(name = "weather", description = "根据城市获取天气")
     public String getWeather(String city) {
         try {
-            String locationId = qWeatherClient.getLocationId(city);
-            if (locationId == null) {
-                return "无法查询到该城市：" + city + " 的天气信息，请检查名称是否正确。";
-            }
+            String locationId = weatherClient.getLocationId(city);
+            WeatherNowResponse weatherNow = weatherClient.getNowWeather(locationId);
+            WeatherDailyResponse todayForecast = weatherClient.getTodayForecast(locationId);
 
-            String weatherNow = qWeatherClient.getNowWeather(locationId);
-            String weatherDaily = qWeatherClient.getDailyForecast(locationId);
-
-            return String.format(
-                    "【%s天气查询结果】\n实时天气:\n%s\n\n今日预报:\n%s\n\n",
-                    city, weatherNow, weatherDaily);
+            ObjectNode result = objectMapper.createObjectNode();
+            result.put("success", true);
+            result.put("city", city);
+            result.put("locationId", locationId);
+            result.set("now", objectMapper.valueToTree(weatherNow));
+            result.set("todayForecast", objectMapper.valueToTree(todayForecast));
+            return objectMapper.writeValueAsString(result);
         } catch (Exception e) {
             log.error("查询天气失败", e);
-            return "调用和风天气API失败，目前暂时无法提供该城市的天气。请稍后再试。";
+            ObjectNode error = objectMapper.createObjectNode();
+            error.put("success", false);
+            error.put("city", city);
+            error.put("error", "调用和风天气API失败，暂时无法提供天气信息");
+            error.put("detail", e.getMessage());
+            return error.toString();
         }
     }
 }
