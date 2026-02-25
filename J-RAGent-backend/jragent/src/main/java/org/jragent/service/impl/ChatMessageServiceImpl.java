@@ -6,20 +6,19 @@ import org.jragent.converter.ChatMessageConverter;
 import org.jragent.event.ChatEvent;
 import org.jragent.exception.BaseException;
 import org.jragent.mapper.ChatMessageMapper;
-import org.jragent.model.dto.ChatMessageDTO;
-import org.jragent.model.dto.CreateChatMessageRequest;
-import org.jragent.model.dto.UpdateChatMessageRequest;
+import org.jragent.model.dto.chatMessage.ChatMessageDTO;
+import org.jragent.model.dto.chatMessage.CreateChatMessageRequest;
+import org.jragent.model.dto.chatMessage.UpdateChatMessageRequest;
 import org.jragent.model.entity.ChatMessage;
-import org.jragent.model.vo.ChatMessageVO;
-import org.jragent.model.vo.CreateChatMessageResponse;
-import org.jragent.model.vo.GetChatMessagesResponse;
+import org.jragent.model.vo.chatMessage.ChatMessageVO;
+import org.jragent.model.vo.chatMessage.CreateChatMessageResponse;
+import org.jragent.model.vo.chatMessage.GetChatMessagesResponse;
 import org.jragent.service.ChatMessageService;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service

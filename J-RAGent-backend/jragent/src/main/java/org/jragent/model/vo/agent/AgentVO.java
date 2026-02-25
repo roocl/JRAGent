@@ -1,9 +1,9 @@
-package org.jragent.model.vo;
+package org.jragent.model.vo.agent;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
-import org.jragent.model.dto.AgentDTO;
+import org.jragent.model.dto.agent.AgentDTO;
 
 import java.util.List;
 

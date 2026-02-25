@@ -4,9 +4,7 @@ import org.jragent.agent.tools.Tool;
 import org.jragent.agent.tools.ToolType;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Component
@@ -23,7 +21,7 @@ public class CityTestTool implements Tool {
 
     @Override
     public ToolType getType() {
-        return ToolType.FIXED;
+        return ToolType.OPTIONAL;
     }
 
     @org.springframework.ai.tool.annotation.Tool(name = "getCity", description = "获取当前的城市")

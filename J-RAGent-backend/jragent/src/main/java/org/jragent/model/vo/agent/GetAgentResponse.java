@@ -1,4 +1,4 @@
-package org.jragent.model.vo;
+package org.jragent.model.vo.agent;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;

@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import org.jragent.model.vo.ChatMessageVO;
+import org.jragent.model.vo.chatMessage.ChatMessageVO;
 
 @Data
 @AllArgsConstructor

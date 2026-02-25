@@ -6,11 +6,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.jragent.model.common.ApiResponse;
-import org.jragent.model.dto.CreateChatSessionRequest;
-import org.jragent.model.dto.UpdateChatSessionRequest;
-import org.jragent.model.vo.CreateChatSessionResponse;
-import org.jragent.model.vo.GetChatSessionResponse;
-import org.jragent.model.vo.GetChatSessionsResponse;
+import org.jragent.model.dto.chatSession.CreateChatSessionRequest;
+import org.jragent.model.dto.chatSession.UpdateChatSessionRequest;
+import org.jragent.model.vo.chatSession.CreateChatSessionResponse;
+import org.jragent.model.vo.chatSession.GetChatSessionResponse;
+import org.jragent.model.vo.chatSession.GetChatSessionsResponse;
 import org.jragent.service.ChatSessionService;
 import org.springframework.web.bind.annotation.*;
 

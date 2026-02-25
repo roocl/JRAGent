@@ -1,4 +1,4 @@
-package org.jragent.model.dto;
+package org.jragent.model.dto.agent;
 
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;

@@ -1,4 +1,4 @@
-package org.jragent.model.dto;
+package org.jragent.model.dto.agent;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 import io.swagger.v3.oas.annotations.media.Schema;

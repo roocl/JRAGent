@@ -1,4 +1,4 @@
-package org.jragent.model.dto;
+package org.jragent.model.dto.chatMessage;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

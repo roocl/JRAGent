@@ -42,3 +42,8 @@ document:
   storage:
     base-path: ./data/documents
 
+qweather:
+  api-key: ${X_QW_API_KEY}
+  geo-api-url: https://${X_QW_API_HOST}/geo/v2/city/lookup
+  weather-api-url: https://${X_QW_API_HOST}/v7/weather/now
+  forecast-api-url: https://${X_QW_API_HOST}/v7/weather/3d

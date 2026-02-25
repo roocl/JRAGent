@@ -1,10 +1,10 @@
 package org.jragent.service;
 
-import org.jragent.model.dto.CreateAgentRequest;
-import org.jragent.model.dto.UpdateAgentRequest;
-import org.jragent.model.vo.CreateAgentResponse;
-import org.jragent.model.vo.GetAgentResponse;
-import org.jragent.model.vo.GetAgentsResponse;
+import org.jragent.model.dto.agent.CreateAgentRequest;
+import org.jragent.model.dto.agent.UpdateAgentRequest;
+import org.jragent.model.vo.agent.CreateAgentResponse;
+import org.jragent.model.vo.agent.GetAgentResponse;
+import org.jragent.model.vo.agent.GetAgentsResponse;
 
 public interface AgentService {
     GetAgentResponse getAgent(String agentId);

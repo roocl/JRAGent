@@ -5,11 +5,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.jragent.model.common.ApiResponse;
-import org.jragent.model.dto.CreateAgentRequest;
-import org.jragent.model.dto.UpdateAgentRequest;
-import org.jragent.model.vo.CreateAgentResponse;
-import org.jragent.model.vo.GetAgentResponse;
-import org.jragent.model.vo.GetAgentsResponse;
+import org.jragent.model.dto.agent.CreateAgentRequest;
+import org.jragent.model.dto.agent.UpdateAgentRequest;
+import org.jragent.model.vo.agent.CreateAgentResponse;
+import org.jragent.model.vo.agent.GetAgentResponse;
+import org.jragent.model.vo.agent.GetAgentsResponse;
 import org.jragent.service.AgentService;
 import org.springframework.web.bind.annotation.*;
 

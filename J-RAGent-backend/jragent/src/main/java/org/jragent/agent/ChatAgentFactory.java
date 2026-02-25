@@ -8,8 +8,8 @@ import org.jragent.config.ChatClientRegistry;
 import org.jragent.converter.AgentConverter;
 import org.jragent.converter.ChatMessageConverter;
 import org.jragent.mapper.AgentMapper;
-import org.jragent.model.dto.AgentDTO;
-import org.jragent.model.dto.ChatMessageDTO;
+import org.jragent.model.dto.agent.AgentDTO;
+import org.jragent.model.dto.chatMessage.ChatMessageDTO;
 import org.jragent.service.ChatMessageService;
 import org.jragent.service.SseService;
 import org.jragent.service.ToolService;
@@ -20,7 +20,6 @@ import org.springframework.ai.chat.messages.ToolResponseMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.tool.ToolCallback;
 import org.springframework.ai.tool.method.MethodToolCallbackProvider;
-import org.springframework.aop.support.AopUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 

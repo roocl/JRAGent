@@ -4,11 +4,11 @@ package org.jragent.converter;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.jragent.model.dto.ChatSessionDTO;
-import org.jragent.model.dto.CreateChatSessionRequest;
-import org.jragent.model.dto.UpdateChatSessionRequest;
+import org.jragent.model.dto.chatSession.ChatSessionDTO;
+import org.jragent.model.dto.chatSession.CreateChatSessionRequest;
+import org.jragent.model.dto.chatSession.UpdateChatSessionRequest;
 import org.jragent.model.entity.ChatSession;
-import org.jragent.model.vo.ChatSessionVO;
+import org.jragent.model.vo.chatSession.ChatSessionVO;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 

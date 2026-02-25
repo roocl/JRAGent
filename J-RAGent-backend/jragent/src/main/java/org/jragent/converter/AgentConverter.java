@@ -4,11 +4,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.jragent.model.dto.AgentDTO;
-import org.jragent.model.dto.CreateAgentRequest;
-import org.jragent.model.dto.UpdateAgentRequest;
+import org.jragent.model.dto.agent.AgentDTO;
+import org.jragent.model.dto.agent.CreateAgentRequest;
+import org.jragent.model.dto.agent.UpdateAgentRequest;
 import org.jragent.model.entity.Agent;
-import org.jragent.model.vo.AgentVO;
+import org.jragent.model.vo.agent.AgentVO;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 

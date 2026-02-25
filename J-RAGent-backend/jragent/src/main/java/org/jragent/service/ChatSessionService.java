@@ -1,10 +1,10 @@
 package org.jragent.service;
 
-import org.jragent.model.dto.CreateChatSessionRequest;
-import org.jragent.model.dto.UpdateChatSessionRequest;
-import org.jragent.model.vo.CreateChatSessionResponse;
-import org.jragent.model.vo.GetChatSessionResponse;
-import org.jragent.model.vo.GetChatSessionsResponse;
+import org.jragent.model.dto.chatSession.CreateChatSessionRequest;
+import org.jragent.model.dto.chatSession.UpdateChatSessionRequest;
+import org.jragent.model.vo.chatSession.CreateChatSessionResponse;
+import org.jragent.model.vo.chatSession.GetChatSessionResponse;
+import org.jragent.model.vo.chatSession.GetChatSessionsResponse;
 
 public interface ChatSessionService {
     GetChatSessionResponse getChatSession(String chatSessionId);

@@ -1,10 +1,10 @@
 package org.jragent.service;
 
-import org.jragent.model.dto.ChatMessageDTO;
-import org.jragent.model.dto.CreateChatMessageRequest;
-import org.jragent.model.dto.UpdateChatMessageRequest;
-import org.jragent.model.vo.CreateChatMessageResponse;
-import org.jragent.model.vo.GetChatMessagesResponse;
+import org.jragent.model.dto.chatMessage.ChatMessageDTO;
+import org.jragent.model.dto.chatMessage.CreateChatMessageRequest;
+import org.jragent.model.dto.chatMessage.UpdateChatMessageRequest;
+import org.jragent.model.vo.chatMessage.CreateChatMessageResponse;
+import org.jragent.model.vo.chatMessage.GetChatMessagesResponse;
 
 import java.util.List;
 

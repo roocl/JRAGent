@@ -22,7 +22,7 @@ public class AttractionTestTool implements Tool {
 
     @Override
     public ToolType getType() {
-        return ToolType.FIXED;
+        return ToolType.OPTIONAL;
     }
 
     @org.springframework.ai.tool.annotation.Tool(name = "getAttraction", description = "获取当前城市的景点")
