@@ -10,7 +10,7 @@ import org.jragent.service.SseService;
 import org.jragent.model.dto.chatMessage.ChatMessageDTO;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.memory.ChatMemory;
-import org.springframework.ai.chat.memory.MessageWindowChatMemory;
+
 import org.springframework.ai.chat.messages.AssistantMessage;
 import org.springframework.ai.chat.messages.Message;
 import org.springframework.ai.chat.messages.SystemMessage;
@@ -72,18 +72,17 @@ public class ChatAgent {
     }
 
     public ChatAgent(String agentId,
-                     String name,
-                     String description,
-                     String systemPrompt,
-                     ChatClient chatClient,
-                     Integer maxMessages,
-                     List<Message> memory,
-                     List<ToolCallback> availableTools,
-                     String chatSessionId,
-                     SseService sseService,
-                     ChatMessageService chatMessageService,
-                     ChatMessageConverter chatMessageConverter
-    ) {
+            String name,
+            String description,
+            String systemPrompt,
+            ChatClient chatClient,
+            Integer maxMessages,
+            List<Message> memory,
+            List<ToolCallback> availableTools,
+            String chatSessionId,
+            SseService sseService,
+            ChatMessageService chatMessageService,
+            ChatMessageConverter chatMessageConverter) {
         this.agentId = agentId;
         this.name = name;
         this.description = description;
@@ -97,9 +96,8 @@ public class ChatAgent {
 
         this.agentState = AgentState.IDLE;
         // 保存聊天记录
-        this.chatMemory = MessageWindowChatMemory.builder()
-                .maxMessages(maxMessages == null ? DEFAULT_MAX_MESSAGES : maxMessages)
-                .build();
+        this.chatMemory = new ToolAwareChatMemory(
+                maxMessages == null ? DEFAULT_MAX_MESSAGES : maxMessages);
         this.chatMemory.add(chatSessionId, memory);
         // 添加系统prompt
         if (StringUtils.hasLength(systemPrompt)) {
@@ -127,8 +125,7 @@ public class ChatAgent {
                             "[ToolCalling #%d]\n- name      : %s\n- arguments : %s",
                             i + 1,
                             call.name(),
-                            call.arguments()
-                    );
+                            call.arguments());
                 })
                 .collect(Collectors.joining("\n\n"));
 
@@ -184,7 +181,7 @@ public class ChatAgent {
     }
 
     private boolean think() {
-        //todo 显式prompt？
+        // todo 显式prompt？
         String thinkPrompt = """
                 现在你是一个智能的的具体「决策模块」
                 请根据当前对话上下文，决定下一步的动作。

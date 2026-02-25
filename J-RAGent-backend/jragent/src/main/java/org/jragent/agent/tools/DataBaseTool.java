@@ -39,8 +39,8 @@ public class DataBaseTool implements Tool{
     public String databaseQuery(String sql) {
         // 防注入
         try {
-            sql = sql.trim().toUpperCase();
-            if (!sql.startsWith("SELECT")) {
+            String trimmedSql = sql.trim().toUpperCase();
+            if (!trimmedSql.startsWith("SELECT")) {
                 log.warn("拒绝执行非 SELECT 查询: {}", sql);
                 return "错误：仅支持 SELECT 查询语句。提供的 SQL: " + sql;
             }
