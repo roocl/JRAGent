@@ -52,7 +52,7 @@ public class ChatAgent {
 
     private String chatSessionId;
     // 最多循环次数
-    private static final Integer MAX_STEPS = 20;
+    private static final Integer MAX_STEPS = 30;
     // 默认最大消息数量
     private static final Integer DEFAULT_MAX_MESSAGES = 20;
 
