@@ -29,7 +29,6 @@ public class CreateAgentRequest {
     @Schema(description = "模型名称", example = "deepseek-chat")
     private String model;
 
-    @NotEmpty(message = "允许工具列表不能为空")
     @ArraySchema(
             schema = @Schema(description = "工具名称", example = "WeatherTestTool"),
             arraySchema = @Schema(description = "允许启用的可选工具名称列表")

@@ -1,0 +1,44 @@
+spring:
+  application:
+    name: JRAGent
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  mail:
+    host: smtp.qq.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    default-encoding: UTF-8
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+  ai:
+    deepseek:
+      api-key: ${DEEPSEEK_API_KEY}
+      base-url: https://api.deepseek.com
+      chat:
+        options:
+          model: deepseek-chat
+    zhipuai:
+      api-key: ${ZHIPUAI_API_KEY}
+      base-url: https://open.bigmodel.cn/api/paas
+      chat:
+        options:
+          model: glm-4.7
+
+mybatis:
+  type-aliases-package: org.jragent.model.entity
+  mapper-locations: classpath:mapper/*.xml
+  type-handlers-package: org.jragent.typehandler
+
+document:
+  storage:
+    base-path: ./data/documents
+
