@@ -1,5 +1,5 @@
 import axios from "axios";
-import type { ApiResponse } from "../types/chat";
+import type { ApiResponse } from "../types/api";
 // axios实例包装
 export const http = axios.create({
     baseURL: import.meta.env.VITE_API_BASE_URL || "",

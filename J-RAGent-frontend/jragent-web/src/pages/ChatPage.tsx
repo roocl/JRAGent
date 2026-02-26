@@ -1,8 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { createAgent, createSession, sendMessage } from "../api/chat";
-import type { ChatMessage, SseMessage } from "../types/chat";
+import type { ChatMessage } from "../types/message";
+import type { SseMessage } from "../types/sse";
 
 export default function ChatPage() {
+    const navigate = useNavigate();
+    const { agentId: routeAgentId, sessionId: routeSessionId } = useParams();
+
     const [agentId, setAgentId] = useState("");
     const [sessionId, setSessionId] = useState("");
     const [sseState, setSseState] = useState<"idle" | "connected" | "error">("idle");
@@ -12,18 +17,10 @@ export default function ChatPage() {
 
     const ready = useMemo(() => !!agentId && !!sessionId, [agentId, sessionId]);
 
-    useEffect(() => {
-        return () => esRef.current?.close();
-    }, []);
+    function connectSse(currentSessionId: string) {
+        esRef.current?.close();
 
-    // 初始化 建立agent和会话，建立sse监听
-    async function bootstrap() {
-        const a = await createAgent();
-        setAgentId(a.agentId);
-        const s = await createSession(a.agentId);
-        setSessionId(s.chatSessionId);
-
-        const es = new EventSource(`/sse/connect/${s.chatSessionId}`);
+        const es = new EventSource(`/sse/connect/${currentSessionId}`);
         esRef.current = es;
 
         es.addEventListener("init", () => setSseState("connected"));
@@ -31,12 +28,44 @@ export default function ChatPage() {
             try {
                 const data = JSON.parse((evt as MessageEvent).data) as SseMessage;
                 const m = data.payload?.message;
-                if (m) setMessages((prev) => [...prev, { id: m.id, sessionId: m.sessionId, role: m.role, content: m.content }]);
+                if (m) {
+                    setMessages((prev) => [...prev, { id: m.id, sessionId: m.sessionId, role: m.role, content: m.content }]);
+                }
             } catch {
                 // ignore parse errors
             }
         });
         es.onerror = () => setSseState("error");
+    }
+
+    useEffect(() => {
+        return () => esRef.current?.close();
+    }, []);
+
+    useEffect(() => {
+        setAgentId(routeAgentId ?? "");
+        setSessionId(routeSessionId ?? "");
+
+        if (routeSessionId) {
+            setSseState("idle");
+            connectSse(routeSessionId);
+        } else {
+            esRef.current?.close();
+            setSseState("idle");
+        }
+    }, [routeAgentId, routeSessionId]);
+
+    // 初始化 建立agent和会话，建立sse监听
+    async function bootstrap() {
+        let nextAgentId = routeAgentId;
+        if (!nextAgentId) {
+            const createdAgent = await createAgent();
+            nextAgentId = createdAgent.agentId;
+        }
+
+        const createdSession = await createSession(nextAgentId);
+        setMessages([]);
+        navigate(`/chat/${nextAgentId}/${createdSession.chatSessionId}`);
     }
 
     // 消息发送
@@ -49,14 +78,16 @@ export default function ChatPage() {
     }
 
     return (
-        <div className="min-h-screen bg-slate-100 text-slate-900">
-            <div className="mx-auto max-w-3xl p-6">
-                <h1 className="text-2xl font-bold">JRAGent Chat MVP</h1>
+        <div className="text-slate-900">
+            <div className="mx-auto max-w-3xl p-2">
+                <h1 className="text-2xl font-bold">聊天</h1>
+                <p className="mt-1 text-xs text-slate-500">agentId: {agentId || "(未选择)"}</p>
+                <p className="mt-1 text-xs text-slate-500">sessionId: {sessionId || "(未选择)"}</p>
                 <p className="mt-1 text-sm text-slate-600">SSE: {sseState}</p>
 
                 <div className="mt-4 flex gap-2">
                     <button onClick={bootstrap} className="rounded-lg bg-slate-900 px-4 py-2 text-white hover:bg-slate-700">
-                        初始化 Agent + Session + SSE
+                        {agentId ? "新建会话并连接SSE" : "初始化 Agent + Session + SSE"}
                     </button>
                 </div>
 
