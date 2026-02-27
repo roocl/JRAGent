@@ -6,29 +6,18 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 /*
-* 智能体
+* 知识库
 * */
 @Data
 @Builder
-public class Agent {
+public class KnowledgeBase {
     private String id;
 
     private String name;
 
     private String description;
 
-    private String systemPrompt;
-
-    private String model;
-
-    // JSON String
-    private String allowedTools;
-
-    // JSON String
-    private String allowedKbs;
-
-    // JSON String
-    private String chatOptions;
+    private String metadata;
 
     private LocalDateTime createdAt;
 

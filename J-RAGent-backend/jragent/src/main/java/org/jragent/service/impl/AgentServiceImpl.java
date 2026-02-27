@@ -49,13 +49,11 @@ public class AgentServiceImpl implements AgentService {
         List<Agent> agents = agentMapper.selectAll();
 
         List<AgentVO> agentVOS = agents.stream().map(agent -> {
-            AgentVO agentVO;
             try {
-                agentVO = agentConverter.toVO(agent);
+                return agentConverter.toVO(agent);
             } catch (JsonProcessingException e) {
                 throw new BaseException();
             }
-            return agentVO;
         }).toList();
 
         return GetAgentsResponse.builder()

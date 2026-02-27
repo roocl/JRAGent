@@ -11,13 +11,14 @@
         <result column="system_prompt" property="systemPrompt"/>
         <result column="model" property="model"/>
         <result column="allowed_tools" property="allowedTools"/>
+        <result column="allowed_kbs" property="allowedKbs"/>
         <result column="chat_options" property="chatOptions"/>
         <result column="created_at" property="createdAt"/>
         <result column="updated_at" property="updatedAt"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id, name, description, system_prompt, model, allowed_tools, chat_options, created_at, updated_at
+        id, name, description, system_prompt, model, allowed_tools, allowed_kbs, chat_options, created_at, updated_at
     </sql>
 
     <select id="selectById" parameterType="java.lang.String" resultMap="BaseResultMap">
@@ -27,9 +28,10 @@
                system_prompt,
                model,
                allowed_tools::text AS allowed_tools,
-                chat_options::text  AS chat_options,
-                created_at,
-                updated_at
+               allowed_kbs::text   AS allowed_kbs,
+               chat_options::text  AS chat_options,
+               created_at,
+               updated_at
         FROM agent
         WHERE id = CAST(#{id} AS uuid)
     </select>
@@ -41,9 +43,10 @@
                system_prompt,
                model,
                allowed_tools::text AS allowed_tools,
-                chat_options::text  AS chat_options,
-                created_at,
-                updated_at
+               allowed_kbs::text   AS allowed_kbs,
+               chat_options::text  AS chat_options,
+               created_at,
+               updated_at
         FROM agent
         ORDER BY created_at DESC
     </select>
@@ -56,6 +59,7 @@
          system_prompt,
          model,
          allowed_tools,
+         allowed_kbs,
          chat_options,
          created_at,
          updated_at)
@@ -64,6 +68,7 @@
                 #{systemPrompt},
                 #{model},
                 CAST(#{allowedTools} AS jsonb),
+                CAST(#{allowedKbs} AS jsonb),
                 CAST(#{chatOptions} AS jsonb),
                 #{createdAt},
                 #{updatedAt})
@@ -87,6 +92,10 @@
 
             <if test="allowedTools != null">
                 allowed_tools = CAST(#{allowedTools} AS jsonb),
+            </if>
+
+            <if test="allowedKbs != null">
+                allowed_kbs = CAST(#{allowedKbs} AS jsonb),
             </if>
 
             <if test="chatOptions != null">

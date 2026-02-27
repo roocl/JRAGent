@@ -21,7 +21,7 @@ public class AgentConverter {
     public Agent toEntity(AgentDTO dto) throws JsonProcessingException {
         Assert.notNull(dto, "AgentDTO cannot be null");
         Assert.notNull(dto.getAllowedTools(), "Allowed tools cannot be null");
-//        Assert.notNull(dto.getAllowedKbs(), "Allowed kbs cannot be null");
+        Assert.notNull(dto.getAllowedKbs(), "Allowed kbs cannot be null");
         Assert.notNull(dto.getChatOptions(), "Chat options cannot be null");
         Assert.notNull(dto.getModel(), "Model cannot be null");
 
@@ -32,7 +32,7 @@ public class AgentConverter {
                 .systemPrompt(dto.getSystemPrompt())
                 .model(dto.getModel().getModelName())
                 .allowedTools(objectMapper.writeValueAsString(dto.getAllowedTools()))
-//                .allowedKbs(objectMapper.writeValueAsString(dto.getAllowedKbs()))
+                .allowedKbs(objectMapper.writeValueAsString(dto.getAllowedKbs()))
                 .chatOptions(objectMapper.writeValueAsString(dto.getChatOptions()))
                 .createdAt(dto.getCreatedAt())
                 .updatedAt(dto.getUpdatedAt())
@@ -42,7 +42,7 @@ public class AgentConverter {
     public AgentDTO toDTO(Agent agent) throws JsonProcessingException {
         Assert.notNull(agent, "Agent cannot be null");
         Assert.notNull(agent.getAllowedTools(), "Allowed tools cannot be null");
-//        Assert.notNull(agent.getAllowedKbs(), "Allowed kbs cannot be null");
+        Assert.notNull(agent.getAllowedKbs(), "Allowed kbs cannot be null");
         Assert.notNull(agent.getChatOptions(), "Chat options cannot be null");
         Assert.notNull(agent.getModel(), "Model cannot be null");
 
@@ -53,7 +53,7 @@ public class AgentConverter {
                 .systemPrompt(agent.getSystemPrompt())
                 .model(AgentDTO.ModelType.fromModelName(agent.getModel()))
                 .allowedTools(objectMapper.readValue(agent.getAllowedTools(), new TypeReference<>(){}))
-//                .allowedKbs(objectMapper.readValue(agent.getAllowedKbs(), new TypeReference<>(){}))
+                .allowedKbs(objectMapper.readValue(agent.getAllowedKbs(), new TypeReference<>(){}))
                 .chatOptions(objectMapper.readValue(agent.getChatOptions(), AgentDTO.ChatOptions.class))
                 .createdAt(agent.getCreatedAt())
                 .updatedAt(agent.getUpdatedAt())
@@ -63,7 +63,7 @@ public class AgentConverter {
     public AgentDTO toDTO(CreateAgentRequest request) {
         Assert.notNull(request, "CreateAgentRequest cannot be null");
         Assert.notNull(request.getAllowedTools(), "Allowed tools cannot be null");
-//        Assert.notNull(request.getAllowedKbs(), "Allowed kbs cannot be null");
+        Assert.notNull(request.getAllowedKbs(), "Allowed kbs cannot be null");
         Assert.notNull(request.getChatOptions(), "Chat options cannot be null");
         Assert.notNull(request.getModel(), "Model cannot be null");
 
@@ -73,7 +73,7 @@ public class AgentConverter {
                 .systemPrompt(request.getSystemPrompt())
                 .model(AgentDTO.ModelType.fromModelName(request.getModel()))
                 .allowedTools(request.getAllowedTools())
-//                .allowedKbs(request.getAllowedKbs())
+                .allowedKbs(request.getAllowedKbs())
                 .chatOptions(request.getChatOptions())
                 .build();
     }
@@ -91,7 +91,7 @@ public class AgentConverter {
                 .systemPrompt(dto.getSystemPrompt())
                 .model(dto.getModel())
                 .allowedTools(dto.getAllowedTools())
-//                .allowedKbs(dto.getAllowedKbs())
+                .allowedKbs(dto.getAllowedKbs())
                 .chatOptions(dto.getChatOptions())
                 .build();
     }
@@ -116,9 +116,9 @@ public class AgentConverter {
         if (request.getAllowedTools() != null) {
             dto.setAllowedTools(request.getAllowedTools());
         }
-//        if (request.getAllowedKbs() != null) {
-//            dto.setAllowedKbs(request.getAllowedKbs());
-//        }
+        if (request.getAllowedKbs() != null) {
+            dto.setAllowedKbs(request.getAllowedKbs());
+        }
         if (request.getChatOptions() != null) {
             dto.setChatOptions(request.getChatOptions());
         }

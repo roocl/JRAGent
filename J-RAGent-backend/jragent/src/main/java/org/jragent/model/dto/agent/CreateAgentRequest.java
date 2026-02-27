@@ -29,11 +29,16 @@ public class CreateAgentRequest {
     private String model;
 
     @ArraySchema(
-            schema = @Schema(description = "工具名称", example = "WeatherTestTool"),
+            schema = @Schema(description = "工具名称"),
             arraySchema = @Schema(description = "允许启用的可选工具名称列表")
     )
     private List<String> allowedTools;
-//    private List<String> allowedKbs;
+
+    @ArraySchema(
+            schema = @Schema(description = "知识库名称"),
+            arraySchema = @Schema(description = "允许启用的可选知识库名称列表")
+    )
+    private List<String> allowedKbs;
 
     @Valid
     @NotNull(message = "聊天参数配置不能为空")

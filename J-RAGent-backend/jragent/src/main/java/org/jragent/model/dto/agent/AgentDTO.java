@@ -33,7 +33,8 @@ public class AgentDTO {
     @Schema(description = "允许启用的可选工具名称列表")
     private List<String> allowedTools;
 
-//    private List<String> allowedKbs;
+    @Schema(description = "允许启用的可选知识库列表")
+    private List<String> allowedKbs;
 
     @Schema(description = "聊天参数配置")
     private ChatOptions chatOptions;
@@ -48,9 +49,9 @@ public class AgentDTO {
     @AllArgsConstructor
     @Schema(description = "模型类型枚举")
     public enum ModelType {
-        @Schema(description = "DeepSeek Chat 模型")
+        @Schema(description = "DeepSeek Chat模型")
         DEEPSEEK_CHAT("deepseek-chat"),
-        @Schema(description = "智谱 GLM-4.7 模型")
+        @Schema(description = "智谱GLM-4.7模型")
         GLM_4_7("glm-4.7");
 
         @JsonValue

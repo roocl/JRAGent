@@ -3,6 +3,7 @@ package org.jragent.agent;
 import lombok.extern.slf4j.Slf4j;
 import org.jragent.converter.ChatMessageConverter;
 import org.jragent.message.SseMessage;
+import org.jragent.model.dto.knowledgeBase.KnowledgeBaseDTO;
 import org.jragent.model.vo.chatMessage.ChatMessageVO;
 import org.jragent.model.vo.chatMessage.CreateChatMessageResponse;
 import org.jragent.service.ChatMessageService;
@@ -46,6 +47,8 @@ public class ChatAgent {
 
     private List<ToolCallback> availableTools;
 
+    private List<KnowledgeBaseDTO> availableKbs;
+
     private ToolCallingManager toolCallingManager;
 
     private ChatMemory chatMemory;
@@ -72,23 +75,25 @@ public class ChatAgent {
     }
 
     public ChatAgent(String agentId,
-            String name,
-            String description,
-            String systemPrompt,
-            ChatClient chatClient,
-            Integer maxMessages,
-            List<Message> memory,
-            List<ToolCallback> availableTools,
-            String chatSessionId,
-            SseService sseService,
-            ChatMessageService chatMessageService,
-            ChatMessageConverter chatMessageConverter) {
+                     String name,
+                     String description,
+                     String systemPrompt,
+                     ChatClient chatClient,
+                     Integer maxMessages,
+                     List<Message> memory,
+                     List<ToolCallback> availableTools,
+                     List<KnowledgeBaseDTO> availableKbs,
+                     String chatSessionId,
+                     SseService sseService,
+                     ChatMessageService chatMessageService,
+                     ChatMessageConverter chatMessageConverter) {
         this.agentId = agentId;
         this.name = name;
         this.description = description;
         this.systemPrompt = systemPrompt;
         this.chatClient = chatClient;
         this.availableTools = availableTools;
+        this.availableKbs = availableKbs;
         this.chatSessionId = chatSessionId;
         this.sseService = sseService;
         this.chatMessageService = chatMessageService;
@@ -185,7 +190,7 @@ public class ChatAgent {
         String thinkPrompt = """
                 现在你是一个智能的的具体「决策模块」
                 请根据当前对话上下文，决定下一步的动作。
-                """;
+                """.formatted(this.availableKbs);
 
         Prompt prompt = Prompt.builder()
                 .chatOptions(this.chatOptions)

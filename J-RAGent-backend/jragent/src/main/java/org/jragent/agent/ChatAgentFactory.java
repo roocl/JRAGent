@@ -1,6 +1,11 @@
 package org.jragent.agent;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.jragent.agent.tools.Tool;
+import org.jragent.converter.KnowledgeBaseConverter;
+import org.jragent.mapper.KnowledgeBaseMapper;
+import org.jragent.model.dto.knowledgeBase.KnowledgeBaseDTO;
+import org.jragent.model.entity.KnowledgeBase;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.messages.*;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +44,9 @@ public class ChatAgentFactory {
 
     private final AgentConverter agentConverter;
 
-    //todo 知识库mapper和converter
+    private final KnowledgeBaseMapper knowledgeBaseMapper;
+
+    private final KnowledgeBaseConverter knowledgeBaseConverter;
 
     private final ToolService toolService;
 
@@ -47,11 +54,23 @@ public class ChatAgentFactory {
 
     private final ChatMessageConverter chatMessageConverter;
 
-    public ChatAgentFactory(ChatClientRegistry chatClientRegistry, SseService sseService, AgentMapper agentMapper, AgentConverter agentConverter, ToolService toolService, ChatMessageService chatMessageService, ChatMessageConverter chatMessageConverter) {
+    public ChatAgentFactory(
+            ChatClientRegistry chatClientRegistry,
+            SseService sseService,
+            AgentMapper agentMapper,
+            AgentConverter agentConverter,
+            KnowledgeBaseMapper knowledgeBaseMapper,
+            KnowledgeBaseConverter knowledgeBaseConverter,
+            ToolService toolService,
+            ChatMessageService chatMessageService,
+            ChatMessageConverter chatMessageConverter
+    ) {
         this.chatClientRegistry = chatClientRegistry;
         this.sseService = sseService;
         this.agentMapper = agentMapper;
         this.agentConverter = agentConverter;
+        this.knowledgeBaseMapper = knowledgeBaseMapper;
+        this.knowledgeBaseConverter = knowledgeBaseConverter;
         this.toolService = toolService;
         this.chatMessageService = chatMessageService;
         this.chatMessageConverter = chatMessageConverter;
@@ -134,6 +153,28 @@ public class ChatAgentFactory {
         return runtimeTools;
     }
 
+    private List<KnowledgeBaseDTO> resolveRuntimeKnowledgeBases(AgentDTO agentConfig) {
+        List<String> allowedKbIds = agentConfig.getAllowedKbs();
+        if (allowedKbIds == null || allowedKbIds.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        List<KnowledgeBase> knowledgeBases = knowledgeBaseMapper.selectByIdBatch(allowedKbIds);
+        if (knowledgeBases.isEmpty()) {
+            return Collections.emptyList();
+        }
+        List<KnowledgeBaseDTO> kbDTOs = new ArrayList<>();
+        try {
+            for (KnowledgeBase knowledgeBase : knowledgeBases) {
+                KnowledgeBaseDTO kbDTO = knowledgeBaseConverter.toDTO(knowledgeBase);
+                kbDTOs.add(kbDTO);
+            }
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+        return kbDTOs;
+    }
+
     /*将Tool对象转换成可被Spring AI执行的ToolCallBack*/
     private List<ToolCallback> buildToolCallbacks(List<Tool> runtimeTools) {
         List<ToolCallback> callbacks = new ArrayList<>();
@@ -160,6 +201,7 @@ public class ChatAgentFactory {
             AgentDTO agentConfig,
             List<Message> memories,
             List<ToolCallback> toolCallbacks,
+            List<KnowledgeBaseDTO> knowledgeBases,
             String chatSessionId
     ) {
         ChatClient chatClient = chatClientRegistry.get(agent.getModel());
@@ -176,6 +218,7 @@ public class ChatAgentFactory {
                 agentConfig.getChatOptions().getMessageLength(),
                 memories,
                 toolCallbacks,
+                knowledgeBases,
                 chatSessionId,
                 sseService,
                 chatMessageService,
@@ -188,11 +231,11 @@ public class ChatAgentFactory {
         AgentDTO agentConfig = toAgentConfig(agent);
         List<Message> memories = loadMemories(chatSessionId, agentConfig);
 
-        //kb
-
         List<Tool> runtimeTools = resolveRuntimeTools(agentConfig);
+        List<KnowledgeBaseDTO> knowledgeBases = resolveRuntimeKnowledgeBases(agentConfig);
+
         List<ToolCallback> toolCallbacks = buildToolCallbacks(runtimeTools);
 
-        return buildChatAgentRuntime(agent, agentConfig, memories, toolCallbacks, chatSessionId);
+        return buildChatAgentRuntime(agent, agentConfig, memories, toolCallbacks, knowledgeBases, chatSessionId);
     }
 }

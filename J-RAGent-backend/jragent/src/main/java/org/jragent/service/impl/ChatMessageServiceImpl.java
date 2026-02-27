@@ -35,10 +35,8 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         List<ChatMessage> chatMessages = chatMessageMapper.selectBySessionId(sessionId);
 
         List<ChatMessageVO> chatMessageVOS = chatMessages.stream().map(chatMessage -> {
-            ChatMessageVO chatMessageVO;
             try {
-                chatMessageVO = chatMessageConverter.toVO(chatMessage);
-                return chatMessageVO;
+                return chatMessageConverter.toVO(chatMessage);
             } catch (JsonProcessingException e) {
                 throw new BaseException();
             }
@@ -54,10 +52,8 @@ public class ChatMessageServiceImpl implements ChatMessageService {
         List<ChatMessage> chatMessages = chatMessageMapper.selectBySessionIdRecently(sessionId, limit);
 
         return chatMessages.stream().map(chatMessage -> {
-            ChatMessageDTO chatMessageDTO;
             try {
-                chatMessageDTO = chatMessageConverter.toDTO(chatMessage);
-                return chatMessageDTO;
+                return chatMessageConverter.toDTO(chatMessage);
             } catch (JsonProcessingException e) {
                 throw new BaseException();
             }
