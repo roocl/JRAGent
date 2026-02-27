@@ -63,8 +63,7 @@ public class ChatAgentFactory {
             KnowledgeBaseConverter knowledgeBaseConverter,
             ToolService toolService,
             ChatMessageService chatMessageService,
-            ChatMessageConverter chatMessageConverter
-    ) {
+            ChatMessageConverter chatMessageConverter) {
         this.chatClientRegistry = chatClientRegistry;
         this.sseService = sseService;
         this.agentMapper = agentMapper;
@@ -82,7 +81,8 @@ public class ChatAgentFactory {
 
     private List<Message> loadMemories(String chatSessionId, AgentDTO agentConfig) {
         int messageLength = agentConfig.getChatOptions().getMessageLength();
-        List<ChatMessageDTO> chatMessages = chatMessageService.getChatMessagesBySessionIdRecently(chatSessionId, messageLength);
+        List<ChatMessageDTO> chatMessages = chatMessageService.getChatMessagesBySessionIdRecently(chatSessionId,
+                messageLength);
         List<Message> memories = new ArrayList<>();
         for (ChatMessageDTO chatMessageDTO : chatMessages) {
             switch (chatMessageDTO.getRole()) {
@@ -93,29 +93,31 @@ public class ChatAgentFactory {
                     memories.add(0, new SystemMessage(chatMessageDTO.getContent()));
                     break;
                 case USER:
-                    if (!StringUtils.hasLength(chatMessageDTO.getContent())) continue;
+                    if (!StringUtils.hasLength(chatMessageDTO.getContent()))
+                        continue;
                     memories.add(new UserMessage(chatMessageDTO.getContent()));
                     break;
                 case ASSISTANT:
+                    ChatMessageDTO.MetaData assistantMeta = chatMessageDTO.getMetadata();
                     memories.add(AssistantMessage.builder()
                             .content(chatMessageDTO.getContent())
-                            .toolCalls(chatMessageDTO
-                                    .getMetadata()
-                                    .getToolCalls())
+                            .toolCalls(assistantMeta != null ? assistantMeta.getToolCalls() : List.of())
                             .build());
                     break;
                 case TOOL:
+                    ChatMessageDTO.MetaData toolMeta = chatMessageDTO.getMetadata();
+                    if (toolMeta == null || toolMeta.getToolResponse() == null) {
+                        log.warn("TOOL 消息缺少 metadata/toolResponse, 跳过: id={}", chatMessageDTO.getId());
+                        continue;
+                    }
                     memories.add(ToolResponseMessage.builder()
-                            .responses(List.of(chatMessageDTO
-                                    .getMetadata()
-                                    .getToolResponse()))
+                            .responses(List.of(toolMeta.getToolResponse()))
                             .build());
                     break;
                 default:
                     log.error("不支持的Message类型: {}, content = {}",
                             chatMessageDTO.getRole().getRole(),
-                            chatMessageDTO.getContent()
-                    );
+                            chatMessageDTO.getContent());
                     throw new IllegalStateException("不支持的Message类型");
             }
         }
@@ -170,12 +172,12 @@ public class ChatAgentFactory {
                 kbDTOs.add(kbDTO);
             }
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException("解析知识库配置失败", e);
         }
         return kbDTOs;
     }
 
-    /*将Tool对象转换成可被Spring AI执行的ToolCallBack*/
+    /* 将Tool对象转换成可被Spring AI执行的ToolCallBack */
     private List<ToolCallback> buildToolCallbacks(List<Tool> runtimeTools) {
         List<ToolCallback> callbacks = new ArrayList<>();
         for (Tool tool : runtimeTools) {
@@ -202,8 +204,7 @@ public class ChatAgentFactory {
             List<Message> memories,
             List<ToolCallback> toolCallbacks,
             List<KnowledgeBaseDTO> knowledgeBases,
-            String chatSessionId
-    ) {
+            String chatSessionId) {
         ChatClient chatClient = chatClientRegistry.get(agent.getModel());
 
         if (Objects.isNull((chatClient))) {
@@ -222,8 +223,7 @@ public class ChatAgentFactory {
                 chatSessionId,
                 sseService,
                 chatMessageService,
-                chatMessageConverter
-        );
+                chatMessageConverter);
     }
 
     public ChatAgent createChatAgent(String agentId, String chatSessionId) {

@@ -38,7 +38,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
             try {
                 return chatMessageConverter.toVO(chatMessage);
             } catch (JsonProcessingException e) {
-                throw new BaseException();
+                throw new BaseException("消息数据反序列化失败: " + e.getMessage());
             }
         }).toList();
 
@@ -55,7 +55,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
             try {
                 return chatMessageConverter.toDTO(chatMessage);
             } catch (JsonProcessingException e) {
-                throw new BaseException();
+                throw new BaseException("消息数据反序列化失败: " + e.getMessage());
             }
         }).toList();
     }
@@ -69,8 +69,7 @@ public class ChatMessageServiceImpl implements ChatMessageService {
             Assert.notNull(request.getAgentId(), "agentId不能为空");
             publisher.publishEvent(new ChatEvent(request.getAgentId(),
                     chatMessage.getSessionId(),
-                    chatMessage.getContent())
-            );
+                    chatMessage.getContent()));
         }
 
         // 返回生成的chatMessageId

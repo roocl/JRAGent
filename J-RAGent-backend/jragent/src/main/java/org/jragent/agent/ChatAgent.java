@@ -186,10 +186,10 @@ public class ChatAgent {
     }
 
     private boolean think() {
-        // todo 显式prompt？
         String thinkPrompt = """
-                现在你是一个智能的的具体「决策模块」
+                现在你是一个智能的具体「决策模块」。
                 请根据当前对话上下文，决定下一步的动作。
+                你可以使用的知识库：%s
                 """.formatted(this.availableKbs);
 
         Prompt prompt = Prompt.builder()

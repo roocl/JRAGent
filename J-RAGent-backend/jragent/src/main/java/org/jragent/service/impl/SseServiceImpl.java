@@ -8,6 +8,7 @@ import org.jragent.service.SseService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import jakarta.annotation.PreDestroy;
 import java.io.IOException;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -28,7 +29,6 @@ public class SseServiceImpl implements SseService {
     // 统一心跳线程池
     private static final ScheduledExecutorService HEARTBEAT_EXECUTOR = Executors.newScheduledThreadPool(1);
 
-
     private final ConcurrentMap<String, SseEmitter> clients = new ConcurrentHashMap<>();
 
     private final ConcurrentMap<String, ScheduledFuture<?>> heartbeatTasks = new ConcurrentHashMap<>();
@@ -45,7 +45,7 @@ public class SseServiceImpl implements SseService {
             oldEmitter.complete();
         }
 
-        //注册生命周期回调
+        // 注册生命周期回调
         registerLifecycleCallbacks(chatSessionId, emitter);
         // 启动心跳任务
         startHeartbeat(chatSessionId, emitter);
@@ -128,5 +128,10 @@ public class SseServiceImpl implements SseService {
         if (task != null) {
             task.cancel(true);
         }
+    }
+
+    @PreDestroy
+    public void shutdown() {
+        HEARTBEAT_EXECUTOR.shutdownNow();
     }
 }
