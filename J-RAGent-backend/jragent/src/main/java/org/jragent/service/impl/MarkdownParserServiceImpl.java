@@ -121,7 +121,7 @@ public class MarkdownParserServiceImpl implements MarkdownParserService {
     /*提取节点内容*/
     private String extractNodeContent(Node node) {
         // 表格节点保留原始格式，其他节点提取文本内容
-        return node == null ? null : null instanceof TableBlock ? extractTableMarkdown(node) : extractPlainText(node);
+        return node == null ? null : (node instanceof TableBlock ? extractTableMarkdown(node) : extractPlainText(node));
     }
 
     /*提取表格的原始markdown格式*/
@@ -195,17 +195,19 @@ public class MarkdownParserServiceImpl implements MarkdownParserService {
                 BasedSequence chars = node.getChars();
                 if (!chars.isEmpty()) {
                     String nodeText = chars.toString().trim();
-                    if (!text.isEmpty()) {
-                        // 写入字符串前最后检查一遍
-                        String lastChar = text.substring(text.length() - 1);
-                        if (!lastChar.equals("\n") && !lastChar.equals(" ")) {
-                            text.append(" ");
+                    if (!nodeText.isEmpty()) {
+                        // 非首段文本时，写入前检查分隔符，防止文字合在一起
+                        if (!text.isEmpty()) {
+                            String lastChar = text.substring(text.length() - 1);
+                            if (!lastChar.equals("\n") && !lastChar.equals(" ")) {
+                                text.append(" ");
+                            }
                         }
                         text.append(nodeText);
                     }
                 }
             } catch (Exception e) {
-                log.warn("提取叶子节点文本时发生错误");
+                log.warn("提取叶子节点文本时发生错误: {}", e.getMessage());
             }
         }
     }

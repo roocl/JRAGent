@@ -27,7 +27,11 @@ public class UpdateAgentRequest {
     )
     private List<String> allowedTools;
 
-//    private List<String> allowedKbs;
+    @ArraySchema(
+            schema = @Schema(description = "知识库名称"),
+            arraySchema = @Schema(description = "允许启用的可选知识库名称列表")
+    )
+    private List<String> allowedKbs;
 
     @Schema(description = "聊天参数配置")
     private AgentDTO.ChatOptions chatOptions;
